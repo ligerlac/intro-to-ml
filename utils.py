@@ -16,8 +16,8 @@ def plot_housing_prices(sizes, prices, scaled=False):
     plt.scatter(sizes, prices, label='Data points', color='blue')
     plt.title('House Prices vs Size')
     if scaled:
-        plt.xlabel('Size a.u.')
-        plt.ylabel('Price a.u.')
+        plt.xlabel('Size [a.u.]')
+        plt.ylabel('Price [a.u.]')
     else:
         plt.xlabel('Size [sqm]')
         plt.ylabel('Price [CHF]')
