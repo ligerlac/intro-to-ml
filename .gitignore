@@ -1,0 +1,4 @@
+venv/
+*png
+*pyc
+.DS_Store
