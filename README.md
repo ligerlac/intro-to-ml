@@ -2,5 +2,5 @@
 
 ### Setup
 ```
-pip install -r requirements
+pip install -r requirements.txt
 ```

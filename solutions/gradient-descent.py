@@ -1,25 +1,24 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from utils import load_house_prices, plot_housing_prices, plot_fit_landscape_and_loss
 
-# Set random seed for reproducibility
-np.random.seed(42)
+# load the housing prices data
+sizes, prices = load_house_prices('data/housing_prices.txt')
 
-# Generate noisy data on a straight line
-n_points = 50
-true_w = 2.5  # True slope
-true_b = 1.0  # True intercept
-noise_std = 1.8
+# plot the data
+plot_housing_prices(sizes, prices)
 
-# Generate x values and center them around zero to decorrelate w and b
-x = np.linspace(0, 10, n_points)
-x = x - np.mean(x)  # Center x around zero for more circular loss contours
-# Generate y values with noise
-y = true_w * x + true_b + np.random.normal(0, noise_std, n_points)
+# scale the data such that the features are centered around zero and have reasonable range
+x = (sizes - np.mean(sizes)) / np.mean(sizes)
+y = (prices - np.mean(prices)) / np.mean(prices)
+
+# plot the scaled data
+plot_housing_prices(x, y)
 
 # Create ranges for w and b to plot loss surface
-w_range = np.linspace(true_w - 1, true_w + 1, 50)
-b_range = np.linspace(true_b - 2, true_b + 2, 50)
+w_range = np.linspace(0, 2, 50)
+b_range = np.linspace(-0.5, 0.5, 50)
 W, B = np.meshgrid(w_range, b_range)
 
 # Calculate loss (Mean Squared Error) for each combination of w and b
@@ -37,8 +36,8 @@ for i in range(W.shape[0]):
 def gradient_descent_path(x_data, y_data, learning_rate=0.05, n_iterations=20):
     """Perform gradient descent and return the path"""
     # Initialize parameters away from optimum for better visualization
-    w_gd = true_w - 0.8
-    b_gd = true_b + 1.
+    w_gd = 0.4
+    b_gd = 0.4
     
     # Store path
     w_path = [w_gd]
@@ -65,105 +64,6 @@ def gradient_descent_path(x_data, y_data, learning_rate=0.05, n_iterations=20):
     return np.array(w_path), np.array(b_path), np.array(loss_path)
 
 
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-
-surface = ax.plot_surface(W, B, Loss, cmap='viridis', alpha=0.7, edgecolor='none')
-
-ax.set_xlabel('Weight (w)')
-ax.set_ylabel('Bias (b)')
-ax.set_zlabel('Loss (MSE)')
-
-# change angle for better view
-ax.view_init(elev=17, azim=-70)
-
-plt.tight_layout()
-
-plt.savefig(f'gradient_descent_path.png', dpi=300)
-
-
-for i in range(10):
-    # Get gradient descent path
-    w_path, b_path, loss_path = gradient_descent_path(x, y, learning_rate=0.03, n_iterations=i)
-
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-
-    surface = ax.plot_surface(W, B, Loss, cmap='viridis', alpha=0.7, edgecolor='none')
-
-    # Plot gradient descent path as connected points
-    # ax2.plot(w_path, b_path, loss_path, 'ro-', markersize=4, linewidth=2, alpha=0.8, label='Gradient descent path')
-
-    # Add arrows showing gradient descent steps
-    for i in range(len(w_path)-1):
-        ax.quiver(w_path[i], b_path[i], loss_path[i],
-                w_path[i+1] - w_path[i], 
-                b_path[i+1] - b_path[i], 
-                loss_path[i+1] - loss_path[i],
-                color='red', arrow_length_ratio=0.1, alpha=1)
-
-    # Mark important points
-    ax.scatter([w_path[0]], [b_path[0]], [loss_path[0]], 
-            color='orange', s=100, marker='s', label='Start point')
-
-    ax.set_xlabel('Weight (w)')
-    ax.set_ylabel('Bias (b)')
-    ax.set_zlabel('Loss (MSE)')
-
-    # change angle for better view
-    ax.view_init(elev=17, azim=-70)
-
-    plt.tight_layout()
-
-    plt.savefig(f'gradient_descent_path_{i}.png', dpi=300)
-
-
-exit(0)
-
-
-
-# # Create the plots
-# fig = plt.figure(figsize=(15, 6))
-
-# # Plot 1: Original data and fitted line
-# ax1 = fig.add_subplot(121)
-# ax1.scatter(x, y, alpha=0.6, label='Noisy data', color='blue')
-# ax1.plot(x, true_w * x + true_b, 'g--', linewidth=2, label=f'True line (w={true_w}, b={true_b})')
-# ax1.set_xlabel('x')
-# ax1.set_ylabel('y')
-# ax1.set_title('Linear Regression on Noisy Data')
-# ax1.legend()
-# ax1.grid(True, alpha=0.3)
-
-# # Plot 2: 3D Loss Surface with gradient descent arrows
-# ax2 = fig.add_subplot(122, projection='3d')
-# surface = ax2.plot_surface(W, B, Loss, cmap='viridis', alpha=0.7, edgecolor='none')
-
-# # Plot gradient descent path as connected points
-# # ax2.plot(w_path, b_path, loss_path, 'ro-', markersize=4, linewidth=2, alpha=0.8, label='Gradient descent path')
-
-# # Add arrows showing gradient descent steps
-# for i in range(len(w_path)-1):
-#     ax2.quiver(w_path[i], b_path[i], loss_path[i],
-#                w_path[i+1] - w_path[i], 
-#                b_path[i+1] - b_path[i], 
-#                loss_path[i+1] - loss_path[i],
-#                color='red', arrow_length_ratio=0.1, alpha=1)
-
-# # Mark important points
-# ax2.scatter([w_path[0]], [b_path[0]], [loss_path[0]], 
-#            color='orange', s=100, marker='s', label='Start point')
-# # ax2.scatter([true_w], [true_b], [calculate_loss(true_w, true_b, x, y)], 
-# #            color='green', s=100, marker='o', label='True parameters')
-
-# ax2.set_xlabel('Weight (w)')
-# ax2.set_ylabel('Bias (b)')
-# ax2.set_zlabel('Loss (MSE)')
-# ax2.set_title('3D Loss Surface with Gradient Descent')
-# ax2.legend()
-
-# # change angle for better view
-# ax2.view_init(elev=17, azim=-70)
-
-# plt.tight_layout()
-# plt.show()
+for i in range(50):
+    w_path, b_path, loss_path = gradient_descent_path(x, y, learning_rate=0.1, n_iterations=i)
+    plot_fit_landscape_and_loss(W, B, Loss, x, y, w_path, b_path, loss_path)

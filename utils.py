@@ -10,13 +10,17 @@ def load_house_prices(file_path):
     return sizes, prices
 
 
-def plot_housing_prices(sizes, prices):
+def plot_housing_prices(sizes, prices, scaled=False):
     """Plot house prices."""
     plt.figure(figsize=(6, 4))
     plt.scatter(sizes, prices, label='Data points', color='blue')
     plt.title('House Prices vs Size')
-    plt.xlabel('Size [sqm]')
-    plt.ylabel('Price [CHF]')
+    if scaled:
+        plt.xlabel('Size a.u.')
+        plt.ylabel('Price a.u.')
+    else:
+        plt.xlabel('Size [sqm]')
+        plt.ylabel('Price [CHF]')
     plt.legend()
     plt.grid()
     plt.show()

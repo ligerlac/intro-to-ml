@@ -10,11 +10,13 @@ sizes, prices = load_house_prices('data/housing_prices.txt')
 plot_housing_prices(sizes, prices)
 
 # scale the data such that the features are centered around zero and have reasonable range
-x = (sizes - np.mean(sizes)) / np.mean(sizes)
-y = (prices - np.mean(prices)) / np.mean(prices)
+####### YOUR CODE HERE #######
+x = ...
+y = ...
+####### END OF YOUR CODE ######
 
 # plot the scaled data
-plot_housing_prices(x, y)
+plot_housing_prices(x, y, scaled=True)
 
 # Create ranges for w and b to plot loss surface
 w_range = np.linspace(0, 2, 50)
@@ -23,10 +25,13 @@ W, B = np.meshgrid(w_range, b_range)
 
 # Calculate loss (Mean Squared Error) for each combination of w and b
 def calculate_loss(w, b, x_data, y_data):
-    y_pred = w * x_data + b
-    return np.mean((y_data - y_pred) ** 2)
+    ######### YOUR CODE HERE #########
+    y_pred = ...
+    loss = ...
+    ######## END OF YOUR CODE ########
+    return loss
 
-# Vectorized loss calculation
+# Calcuate loss for each combination of w and b
 Loss = np.zeros_like(W)
 for i in range(W.shape[0]):
     for j in range(W.shape[1]):
@@ -53,8 +58,10 @@ def gradient_descent_path(x_data, y_data, learning_rate=0.05, n_iterations=20):
         db = -2 * np.mean(y_data - y_pred)
         
         # Update parameters
-        w_gd -= learning_rate * dw
-        b_gd -= learning_rate * db
+        ######### YOUR CODE HERE #########
+        w_gd -= ...
+        b_gd -= ...
+        ######## END OF YOUR CODE ########
         
         # Store path
         w_path.append(w_gd)
@@ -64,6 +71,7 @@ def gradient_descent_path(x_data, y_data, learning_rate=0.05, n_iterations=20):
     return np.array(w_path), np.array(b_path), np.array(loss_path)
 
 
+# Plot the fit landscape and loss for different iterations of gradient descent
 for i in range(50):
     w_path, b_path, loss_path = gradient_descent_path(x, y, learning_rate=0.1, n_iterations=i)
     plot_fit_landscape_and_loss(W, B, Loss, x, y, w_path, b_path, loss_path)
